@@ -61,15 +61,7 @@ result = LighterpackParser.parse_url('https://lighterpack.com/r/b6q1kr')
 To run the test suite:
 
 ```bash
-cd lighterpack-parser
-ruby -Ilib test/parser_test.rb
-```
-
-Or using minitest directly:
-
-```bash
-cd lighterpack-parser
-ruby -Ilib -e "require 'minitest/autorun'; require_relative 'test/parser_test'"
+rspec
 ```
 
 ## Test Fixtures
@@ -107,20 +99,9 @@ The parser automatically converts all weights to grams:
 - `g` → use as-is
 - `kg` → multiply by 1000
 
-## Dependencies
-
-- `nokogiri` - HTML parsing
-- `httparty` - HTTP requests (when parsing from URL)
-
 ## Development
 
 To install dependencies locally:
-
-```bash
-gem install nokogiri httparty
-```
-
-Or use bundler if you add a Gemfile:
 
 ```bash
 bundle install

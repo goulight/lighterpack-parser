@@ -232,15 +232,15 @@ module LighterpackParser
       # Try CSS selector first - Nokogiri should handle multiple classes
       consumable_active = element.at_css('i.lpSprite.lpConsumable.lpActive')
       return true if consumable_active
-      
+
       # Fallback: check class attribute directly
       consumable_icon = element.at_css('i.lpSprite.lpConsumable')
       return false unless consumable_icon
-      
+
       class_attr = consumable_icon['class'].to_s
       # Check if lpActive appears in the class string (handles extra spaces)
       return true if class_attr.include?('lpActive')
-      
+
       false
     end
 
@@ -249,15 +249,15 @@ module LighterpackParser
       # Try CSS selector first - Nokogiri should handle multiple classes
       worn_active = element.at_css('i.lpSprite.lpWorn.lpActive')
       return true if worn_active
-      
+
       # Fallback: check class attribute directly
       worn_icon = element.at_css('i.lpSprite.lpWorn')
       return false unless worn_icon
-      
+
       class_attr = worn_icon['class'].to_s
       # Check if lpActive appears in the class string (handles extra spaces)
       return true if class_attr.include?('lpActive')
-      
+
       false
     end
   end
