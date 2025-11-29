@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Parser for Lighterpack lists'
   spec.description   = 'Parse Lighterpack HTML to extract list data including categories, items, weights, and metadata'
-  spec.homepage      = 'https://github.com/packlista/lighterpack-parser'
+  spec.homepage      = 'https://github.com/alex-ross/lighterpack-parser'
   spec.license       = 'MIT'
 
   spec.files         = Dir['lib/**/*', 'spec/**/*', '*.md', '*.gemspec']
