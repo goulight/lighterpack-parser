@@ -89,6 +89,74 @@ class ParserTest < Minitest::Test
     end
   end
 
+  def test_worn_flag_correctness_h23rxt
+    # Test specific items from h23rxt.html that should or should not be worn
+    html = File.read(File.join(@fixture_dir, 'h23rxt.html'))
+    result = LighterpackParser::Parser.new(html: html).parse
+
+    # Find specific items
+    all_items = result[:categories].flat_map { |cat| cat[:items] }
+
+    # "Sea to Summit Ultrasil" should be worn (has lpActive on worn icon)
+    ultrasil = all_items.find { |item| item[:name]&.include?('Sea to Summit Ultrasil') }
+    assert ultrasil, "Should find Sea to Summit Ultrasil item"
+    assert_equal true, ultrasil[:worn], "Sea to Summit Ultrasil should be worn"
+    assert_equal false, ultrasil[:consumable], "Sea to Summit Ultrasil should NOT be consumable"
+
+    # "MacBook Pro" should NOT be worn or consumable
+    macbook = all_items.find { |item| item[:name]&.include?('MacBook Pro') }
+    assert macbook, "Should find MacBook Pro item"
+    assert_equal false, macbook[:worn], "MacBook Pro should NOT be worn"
+    assert_equal false, macbook[:consumable], "MacBook Pro should NOT be consumable"
+  end
+
+  def test_consumable_flag_correctness_h23rxt
+    # Test specific items from h23rxt.html that should or should not be consumable
+    html = File.read(File.join(@fixture_dir, 'h23rxt.html'))
+    result = LighterpackParser::Parser.new(html: html).parse
+
+    # Find specific items
+    all_items = result[:categories].flat_map { |cat| cat[:items] }
+
+    # "Tandkräm (innehåll)" should be consumable (has lpActive on consumable icon)
+    tandkram = all_items.find { |item| item[:name]&.include?('Tandkräm (innehåll)') }
+    assert tandkram, "Should find Tandkräm item"
+    assert_equal true, tandkram[:consumable], "Tandkräm should be consumable"
+    assert_equal false, tandkram[:worn], "Tandkräm should NOT be worn"
+
+    # "Dushtvål/Shampoo" should be consumable
+    shampoo = all_items.find { |item| item[:name]&.include?('Dushtvål') || item[:name]&.include?('Shampoo') }
+    assert shampoo, "Should find Dushtvål/Shampoo item"
+    assert_equal true, shampoo[:consumable], "Dushtvål/Shampoo should be consumable"
+    assert_equal false, shampoo[:worn], "Dushtvål/Shampoo should NOT be worn"
+
+    # "MacBook Pro" should NOT be consumable
+    macbook = all_items.find { |item| item[:name]&.include?('MacBook Pro') }
+    assert macbook, "Should find MacBook Pro item"
+    assert_equal false, macbook[:consumable], "MacBook Pro should NOT be consumable"
+  end
+
+  def test_worn_and_consumable_counts_h23rxt
+    # Verify that only a few items are marked as worn/consumable in h23rxt
+    html = File.read(File.join(@fixture_dir, 'h23rxt.html'))
+    result = LighterpackParser::Parser.new(html: html).parse
+
+    all_items = result[:categories].flat_map { |cat| cat[:items] }
+    total_items = all_items.length
+    worn_count = all_items.count { |item| item[:worn] }
+    consumable_count = all_items.count { |item| item[:consumable] }
+
+    # Based on HTML inspection, there should be:
+    # - 1 worn item (Sea to Summit Ultrasil)
+    # - 2 consumable items (Tandkräm, Dushtvål/Shampoo)
+    # - Most items should NOT be worn or consumable
+    assert worn_count >= 1, "Should have at least 1 worn item, got #{worn_count}"
+    assert worn_count <= 5, "Should have at most 5 worn items (most items are not worn), got #{worn_count}"
+    assert consumable_count >= 2, "Should have at least 2 consumable items, got #{consumable_count}"
+    assert consumable_count <= 5, "Should have at most 5 consumable items (most items are not consumable), got #{consumable_count}"
+    assert total_items > 10, "Should have many items total, got #{total_items}"
+  end
+
   def test_quantity_extraction
     html = File.read(File.join(@fixture_dir, 'b6q1kr.html'))
     result = LighterpackParser::Parser.new(html: html).parse

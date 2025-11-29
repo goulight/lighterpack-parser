@@ -229,27 +229,35 @@ module LighterpackParser
 
     def extract_consumable_flag(element)
       # Check for consumable icon with lpActive class (only active items have lpActive)
-      # The icon must have both lpConsumable AND lpActive classes
+      # Try CSS selector first - Nokogiri should handle multiple classes
+      consumable_active = element.at_css('i.lpSprite.lpConsumable.lpActive')
+      return true if consumable_active
+      
+      # Fallback: check class attribute directly
       consumable_icon = element.at_css('i.lpSprite.lpConsumable')
       return false unless consumable_icon
-
-      # Check if it has the lpActive class
-      classes = consumable_icon['class'].to_s.split(/\s+/)
-      return true if classes.include?('lpActive')
-
+      
+      class_attr = consumable_icon['class'].to_s
+      # Check if lpActive appears in the class string (handles extra spaces)
+      return true if class_attr.include?('lpActive')
+      
       false
     end
 
     def extract_worn_flag(element)
       # Check for worn icon with lpActive class (only active items have lpActive)
-      # The icon must have both lpWorn AND lpActive classes
+      # Try CSS selector first - Nokogiri should handle multiple classes
+      worn_active = element.at_css('i.lpSprite.lpWorn.lpActive')
+      return true if worn_active
+      
+      # Fallback: check class attribute directly
       worn_icon = element.at_css('i.lpSprite.lpWorn')
       return false unless worn_icon
-
-      # Check if it has the lpActive class
-      classes = worn_icon['class'].to_s.split(/\s+/)
-      return true if classes.include?('lpActive')
-
+      
+      class_attr = worn_icon['class'].to_s
+      # Check if lpActive appears in the class string (handles extra spaces)
+      return true if class_attr.include?('lpActive')
+      
       false
     end
   end
