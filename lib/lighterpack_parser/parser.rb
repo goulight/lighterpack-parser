@@ -229,16 +229,26 @@ module LighterpackParser
 
     def extract_consumable_flag(element)
       # Check for consumable icon with lpActive class (only active items have lpActive)
-      consumable_icon = element.at_css('i.lpSprite.lpConsumable.lpActive')
-      return true if consumable_icon
+      # The icon must have both lpConsumable AND lpActive classes
+      consumable_icon = element.at_css('i.lpSprite.lpConsumable')
+      return false unless consumable_icon
+
+      # Check if it has the lpActive class
+      classes = consumable_icon['class'].to_s.split(/\s+/)
+      return true if classes.include?('lpActive')
 
       false
     end
 
     def extract_worn_flag(element)
       # Check for worn icon with lpActive class (only active items have lpActive)
-      worn_icon = element.at_css('i.lpSprite.lpWorn.lpActive')
-      return true if worn_icon
+      # The icon must have both lpWorn AND lpActive classes
+      worn_icon = element.at_css('i.lpSprite.lpWorn')
+      return false unless worn_icon
+
+      # Check if it has the lpActive class
+      classes = worn_icon['class'].to_s.split(/\s+/)
+      return true if classes.include?('lpActive')
 
       false
     end
