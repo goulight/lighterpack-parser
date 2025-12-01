@@ -13,6 +13,8 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/alex-ross/lighterpack-parser'
   spec.license       = 'MIT'
 
+  spec.required_ruby_version = '>= 3.0'
+
   spec.files         = Dir['lib/**/*', 'spec/**/*', '*.md', '*.gemspec']
   spec.require_paths = ['lib']
 
