@@ -1,0 +1,17 @@
+/.bundle/
+/coverage/
+/pkg/
+/spec/reports/
+/tmp/
+*.gem
+.yardoc
+Gemfile.lock
+.DS_Store
+/.env
+/.byebug_history
+/.pry_history
+/.yardoc
+/yardoc/
+/log/
+*.swp
+*.swo
