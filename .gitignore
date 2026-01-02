@@ -2,6 +2,7 @@
 /coverage/
 /pkg/
 /spec/reports/
+.rspec_status
 /tmp/
 *.gem
 .yardoc

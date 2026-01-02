@@ -14,19 +14,19 @@ class ParserTest < Minitest::Test
 
     assert_equal 'Ultimate Hike 2025', result[:name]
     assert result[:categories].is_a?(Array)
-    assert result[:categories].length > 0
+    assert !result[:categories].empty?
 
     # Check first category
     first_category = result[:categories].first
     assert_equal 'Big 3 (Pack, Tent, Sleep System)', first_category[:name]
     assert first_category[:items].is_a?(Array)
-    assert first_category[:items].length > 0
+    assert !first_category[:items].empty?
 
     # Check first item
     first_item = first_category[:items].first
     assert_equal 'Bonfus Altus 38', first_item[:name]
     assert_equal 'With vest styled straps', first_item[:description]
-    assert first_item[:weight] > 0
+    assert first_item[:weight].positive?
     assert_equal 1, first_item[:quantity]
     assert first_item[:worn] || !first_item[:worn] # boolean check
     assert first_item[:consumable] || !first_item[:consumable] # boolean check
@@ -56,11 +56,11 @@ class ParserTest < Minitest::Test
     # Find an item and verify weight is in grams
     result[:categories].each do |category|
       category[:items].each do |item|
-        if item[:weight] > 0
-          # Weight should be reasonable (not in milligrams if original was grams)
-          assert item[:weight] > 0, "Item #{item[:name]} should have weight > 0"
-          assert item[:weight] < 1_000_000, "Item #{item[:name]} weight seems too large: #{item[:weight]}"
-        end
+        next unless item[:weight].positive?
+
+        # Weight should be reasonable (not in milligrams if original was grams)
+        assert item[:weight].positive?, "Item #{item[:name]} should have weight > 0"
+        assert item[:weight] < 1_000_000, "Item #{item[:name]} weight seems too large: #{item[:weight]}"
       end
     end
   end
@@ -99,15 +99,15 @@ class ParserTest < Minitest::Test
 
     # "Sea to Summit Ultrasil" should be worn (has lpActive on worn icon)
     ultrasil = all_items.find { |item| item[:name]&.include?('Sea to Summit Ultrasil') }
-    assert ultrasil, "Should find Sea to Summit Ultrasil item"
-    assert_equal true, ultrasil[:worn], "Sea to Summit Ultrasil should be worn"
-    assert_equal false, ultrasil[:consumable], "Sea to Summit Ultrasil should NOT be consumable"
+    assert ultrasil, 'Should find Sea to Summit Ultrasil item'
+    assert_equal true, ultrasil[:worn], 'Sea to Summit Ultrasil should be worn'
+    assert_equal false, ultrasil[:consumable], 'Sea to Summit Ultrasil should NOT be consumable'
 
     # "MacBook Pro" should NOT be worn or consumable
     macbook = all_items.find { |item| item[:name]&.include?('MacBook Pro') }
-    assert macbook, "Should find MacBook Pro item"
-    assert_equal false, macbook[:worn], "MacBook Pro should NOT be worn"
-    assert_equal false, macbook[:consumable], "MacBook Pro should NOT be consumable"
+    assert macbook, 'Should find MacBook Pro item'
+    assert_equal false, macbook[:worn], 'MacBook Pro should NOT be worn'
+    assert_equal false, macbook[:consumable], 'MacBook Pro should NOT be consumable'
   end
 
   def test_consumable_flag_correctness_h23rxt
@@ -120,20 +120,20 @@ class ParserTest < Minitest::Test
 
     # "Tandkräm (innehåll)" should be consumable (has lpActive on consumable icon)
     tandkram = all_items.find { |item| item[:name]&.include?('Tandkräm (innehåll)') }
-    assert tandkram, "Should find Tandkräm item"
-    assert_equal true, tandkram[:consumable], "Tandkräm should be consumable"
-    assert_equal false, tandkram[:worn], "Tandkräm should NOT be worn"
+    assert tandkram, 'Should find Tandkräm item'
+    assert_equal true, tandkram[:consumable], 'Tandkräm should be consumable'
+    assert_equal false, tandkram[:worn], 'Tandkräm should NOT be worn'
 
     # "Dushtvål/Shampoo" should be consumable
     shampoo = all_items.find { |item| item[:name]&.include?('Dushtvål') || item[:name]&.include?('Shampoo') }
-    assert shampoo, "Should find Dushtvål/Shampoo item"
-    assert_equal true, shampoo[:consumable], "Dushtvål/Shampoo should be consumable"
-    assert_equal false, shampoo[:worn], "Dushtvål/Shampoo should NOT be worn"
+    assert shampoo, 'Should find Dushtvål/Shampoo item'
+    assert_equal true, shampoo[:consumable], 'Dushtvål/Shampoo should be consumable'
+    assert_equal false, shampoo[:worn], 'Dushtvål/Shampoo should NOT be worn'
 
     # "MacBook Pro" should NOT be consumable
     macbook = all_items.find { |item| item[:name]&.include?('MacBook Pro') }
-    assert macbook, "Should find MacBook Pro item"
-    assert_equal false, macbook[:consumable], "MacBook Pro should NOT be consumable"
+    assert macbook, 'Should find MacBook Pro item'
+    assert_equal false, macbook[:consumable], 'MacBook Pro should NOT be consumable'
   end
 
   def test_worn_and_consumable_counts_h23rxt
@@ -153,7 +153,8 @@ class ParserTest < Minitest::Test
     assert worn_count >= 1, "Should have at least 1 worn item, got #{worn_count}"
     assert worn_count <= 5, "Should have at most 5 worn items (most items are not worn), got #{worn_count}"
     assert consumable_count >= 2, "Should have at least 2 consumable items, got #{consumable_count}"
-    assert consumable_count <= 5, "Should have at most 5 consumable items (most items are not consumable), got #{consumable_count}"
+    assert consumable_count <= 5,
+           "Should have at most 5 consumable items (most items are not consumable), got #{consumable_count}"
     assert total_items > 10, "Should have many items total, got #{total_items}"
   end
 
@@ -165,7 +166,7 @@ class ParserTest < Minitest::Test
     result[:categories].each do |category|
       category[:items].each do |item|
         assert item[:quantity].is_a?(Integer), "Quantity should be integer for #{item[:name]}"
-        assert item[:quantity] > 0, "Quantity should be > 0 for #{item[:name]}"
+        assert item[:quantity].positive?, "Quantity should be > 0 for #{item[:name]}"
       end
     end
   end
@@ -173,20 +174,11 @@ class ParserTest < Minitest::Test
   def test_image_url_extraction
     html = File.read(File.join(@fixture_dir, 'b6q1kr.html'))
     result = LighterpackParser::Parser.new(html: html).parse
-
-    # Some items should have image URLs
-    items_with_images = 0
-    result[:categories].each do |category|
-      category[:items].each do |item|
-        if item[:image_url]
-          assert item[:image_url].start_with?('http'), "Image URL should start with http for #{item[:name]}"
-          items_with_images += 1
-        end
-      end
+    items_with_images = result[:categories].flat_map { |cat| cat[:items] }.select { |item| item[:image_url] }
+    items_with_images.each do |item|
+      assert item[:image_url].start_with?('http'), "Image URL should start with http for #{item[:name]}"
     end
-
-    # At least some items should have images
-    assert items_with_images > 0, 'At least some items should have image URLs'
+    assert items_with_images.any?, 'At least some items should have image URLs'
   end
 
   def test_category_description_extraction

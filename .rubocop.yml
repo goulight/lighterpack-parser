@@ -1,0 +1,30 @@
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'test/**/*'
+  TargetRubyVersion: 3.0
+  SuggestExtensions: false
+
+# Allow longer methods in parsers (they need to extract many fields)
+Metrics/MethodLength:
+  Exclude:
+    - 'lib/lighterpack_parser/*_parser.rb'
+    - 'spec/**/*'
+
+Metrics/AbcSize:
+  Exclude:
+    - 'lib/lighterpack_parser/*_parser.rb'
+    - 'spec/**/*'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+# Allow predicate methods without ? for extractors
+Naming/PredicateMethod:
+  Exclude:
+    - 'lib/lighterpack_parser/item_parser.rb'
+
+# Gemspec development dependencies are fine
+Gemspec/DevelopmentDependencies:
+  Enabled: false
