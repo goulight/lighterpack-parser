@@ -10,8 +10,12 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Parser for Lighterpack lists'
   spec.description   = 'Parse Lighterpack HTML to extract list data including categories, items, weights, and metadata'
-  spec.homepage      = 'https://github.com/alex-ross/lighterpack-parser'
+  spec.homepage      = 'https://github.com/goulight/lighterpack-parser'
   spec.license       = 'MIT'
+
+  spec.metadata = {
+    'source_code_uri' => 'https://github.com/goulight/lighterpack-parser'
+  }
 
   spec.required_ruby_version = '>= 3.0'
 
