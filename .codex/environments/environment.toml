@@ -6,6 +6,6 @@ name = "lighterpack-parser"
 script = ""
 
 [[actions]]
-name = "Testa"
+name = "Test"
 icon = "test"
 command = "bundle exec rspec"
