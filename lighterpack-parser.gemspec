@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.files         = Dir['lib/**/*', 'spec/**/*', '*.md', '*.gemspec']
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'httparty', '~> 0.21'
+  spec.add_dependency 'httparty', '~> 0.24'
   spec.add_dependency 'nokogiri', '~> 1.15'
 
   spec.add_development_dependency 'rspec', '~> 3.12'
